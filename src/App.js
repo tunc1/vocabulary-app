@@ -4,12 +4,18 @@ import "./style.css";
 
 export default function App({i18n})
 {
-	const [selectedWord,setSelectedWord]=useState(data[0]);
+	const languages=Object.keys(data);
+	const [selectedWord,setSelectedWord]=useState();
+	const [selectedLanguage,setSelectedLanguage]=useState();
 	const [showTranslation,setShowTranslation]=useState(false);
 	const pickRandomWord=()=>
 	{
-		const index=Math.floor(Math.random() * data.length);
-		setSelectedWord(data[index]);
+		if(selectedLanguage!=null)
+		{
+			const selectedLanguageData=data[selectedLanguage];
+			const index=Math.floor(Math.random() * selectedLanguageData.length);
+			setSelectedWord(selectedLanguageData[index]);
+		}
 	};
 	const showOnClick=()=>
 	{
@@ -20,23 +26,39 @@ export default function App({i18n})
 		setShowTranslation(false);
 		pickRandomWord();
 	};
-	useEffect(pickRandomWord,[]);
+	const onLanguageSelected=e=>
+	{
+		setShowTranslation(false);
+		setSelectedLanguage(e.target.value);
+	};
+	useEffect(pickRandomWord,[selectedLanguage]);
 	return (
 		<div className="App">
-				<h3>{selectedWord.word}</h3>
-				{!showTranslation&&
-					<div class="d-grid gap-2">
-						<button onClick={showOnClick} className="btn btn-primary">{i18n.showTranslation}</button>
-					</div>
+			<select class="form-select" onChange={onLanguageSelected}>
+				<option value="" hidden selected>{i18n.selectALanguage}</option>
+				{
+					languages.map((each,i)=><option key={i} value={each}>{each}</option>)
 				}
-				{showTranslation&&
-					<>
+			</select>
+			{
+				selectedWord&&
+				<>
+					<h3>{selectedWord.word}</h3>
+					{!showTranslation&&
 						<div class="d-grid gap-2">
-							<button className="btn btn-success" onClick={nextOneOnClick}>{i18n.nextOne}</button>
+								<button onClick={showOnClick} className="btn btn-primary">{i18n.showTranslation}</button>
 						</div>
-						<h3>{selectedWord.translation}</h3>
-					</>
-				}
+					}
+					{showTranslation&&
+						<>
+							<div class="d-grid gap-2">
+								<button className="btn btn-success" onClick={nextOneOnClick}>{i18n.nextOne}</button>
+							</div>
+							<h3>{selectedWord.translation}</h3>
+						</>
+					}
+				</>
+			}
 		</div>
 	);
 }
