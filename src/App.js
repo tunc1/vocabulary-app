@@ -8,12 +8,15 @@ export default function App({i18n})
 	const [selectedWord,setSelectedWord]=useState();
 	const [selectedLanguage,setSelectedLanguage]=useState();
 	const [showTranslation,setShowTranslation]=useState(false);
+	const [askTranslation,setAskTranslation]=useState(false);
 	const pickRandomWord=()=>
 	{
 		if(selectedLanguage!=null)
 		{
 			const selectedLanguageData=data[selectedLanguage];
 			const index=Math.floor(Math.random() * selectedLanguageData.length);
+			const random=Math.floor(Math.random() * 2);
+			setAskTranslation(random==0);
 			setSelectedWord(selectedLanguageData[index]);
 		}
 	};
@@ -43,7 +46,7 @@ export default function App({i18n})
 			{
 				selectedWord&&
 				<>
-					<h3>{selectedWord.word}</h3>
+					<h3>{askTranslation?selectedWord.translation:selectedWord.word}</h3>
 					{!showTranslation&&
 						<div class="d-grid gap-2">
 								<button onClick={showOnClick} className="btn btn-primary">{i18n.showTranslation}</button>
@@ -54,7 +57,7 @@ export default function App({i18n})
 							<div class="d-grid gap-2">
 								<button className="btn btn-success" onClick={nextOneOnClick}>{i18n.nextOne}</button>
 							</div>
-							<h3>{selectedWord.translation}</h3>
+							<h3>{askTranslation?selectedWord.word:selectedWord.translation}</h3>
 						</>
 					}
 				</>
